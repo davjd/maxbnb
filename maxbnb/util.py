@@ -1,6 +1,7 @@
 """Methods for analyzing the data."""
 from operator import itemgetter
 import csv
+import io
 
 def get_neighborhoods():
     """returns array with all the names of the neighborhoods."""
@@ -77,10 +78,17 @@ def get_listing_id_from_location(latitude, longitude):
         return -1
 
 def get_ids():
+    ctr = 0
     with open('data/listings.csv') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-            return [row['latitude'], row['longitude']]
+            if ctr == 30:
+                return
+            else:
+                print row['latitude'], ',', row['longitude']
+                ctr += 1
+
+
 
 def get_occupancy_rate(listing_id):
     """total number of dates booked divided the total number of days avaliable."""
@@ -101,8 +109,5 @@ def get_occupancy_rate(listing_id):
                     break
                 else:
                     continue
-        return avaliability[0] / (avaliability[0] + avaliability[1])
-
-IDS = get_ids()
-bo = IDS[1] == '-122.406513787399' 
-print IDS[0], ',', IDS[1]
+        return avaliability[0] / float(avaliability[0] + avaliability[1])
+print get_occupancy_rate(get_listing_id_from_location('37.751992462976204', '-122.40421045324041'))

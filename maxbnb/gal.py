@@ -1,4 +1,11 @@
-import pygal                                                    # First import pygal
-bar_chart = pygal.Bar()                                            # Then create a bar graph object
-bar_chart.add('Fibonacci', [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55])  # Add some values
-bar_chart.render_to_file('bar_chart.svg') 
+"""Methods that'll create the svg files."""
+import pygal
+from util import get_neighborhood_count
+
+line_chart = pygal.HorizontalBar()
+line_chart.title = 'Listings in each neighborhood'
+
+neighborhoods = get_neighborhood_count()
+for key, value in neighborhoods.items():
+    line_chart.add(key, value)
+line_chart.render_to_file('static/assets/h.svg')
