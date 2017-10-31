@@ -2,6 +2,9 @@
 from operator import itemgetter
 import csv
 import io
+from re import sub
+from decimal import Decimal
+
 
 def get_neighborhoods():
     """returns array with all the names of the neighborhoods."""
@@ -35,11 +38,6 @@ def get_neighborhood_count():
             neighbourhoods[row['neighbourhood_cleansed']] += 1
     return neighbourhoods
 
-def get_rating_types():
-    """returns array with all the neighborhood names."""
-    return ['review_scores_rating', 'review_scores_accuracy', 'review_scores_cleanliness',\
-        'review_scores_checkin', 'review_scores_communication', 'review_scores_location', \
-        'review_scores_value']
 
 def get_most_positive_reviews(rating_type):
     """returns a sorted list of arrays of each neighborhood and their rating
@@ -69,13 +67,6 @@ def get_overall_reviews():
         ratings[k] = float(val / 7)
     return sorted(ratings.items(), key=itemgetter(1), reverse=True)
 
-def get_listing_id_from_location(latitude, longitude):
-    with open('data/listings.csv') as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
-            if (row['latitude'] == latitude) and (row['longitude'] == longitude):
-                return row['id']
-        return -1
 
 def get_ids():
     ctr = 0
@@ -88,7 +79,50 @@ def get_ids():
                 print row['latitude'], ',', row['longitude']
                 ctr += 1
 
+def get_most_avaliable():
+    """returns sorted array of neighborhoods and their average availability_365."""
+    neighborhoods = get_neighborhood_dict_array()
+    neighborhoods_occupancy = {}
+    with open('data/listings.csv') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            neighborhoods[row['neighbourhood_cleansed']][0] += int(row['availability_365'])
+            neighborhoods[row['neighbourhood_cleansed']][1] += 1
+        for k, val in neighborhoods.items():
+            neighborhoods_occupancy[k] = float(val[0] / val[1])
+    return sorted(neighborhoods_occupancy.items(), key=itemgetter(1), reverse=True)
 
+def get_most_expensive():
+    """returns sorted array of neighborhoods and their average price."""
+    neighborhoods = get_neighborhood_dict_array()
+    neighborhoods_cost = {}
+    with open('data/listings.csv') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            neighborhoods[row['neighbourhood_cleansed']][0] += parse_usd(row['price'])
+            neighborhoods[row['neighbourhood_cleansed']][1] += 1
+        for k, val in neighborhoods.items():
+            neighborhoods_cost[k] = float(val[0] / val[1])
+        return sorted(neighborhoods_cost.items(), key=itemgetter(1), reverse=True)
+
+def parse_usd(dollars):
+    """converts string of USD to float type."""
+    return Decimal(sub(r'[^\d.]', '', dollars))
+
+def get_listing_id_from_location(latitude, longitude):
+    """returns listing id of location given(latitude, longitude)."""
+    with open('data/listings.csv') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            if (row['latitude'] == latitude) and (row['longitude'] == longitude):
+                return row['id']
+        return -1
+
+def get_rating_types():
+    """returns array with all the neighborhood names."""
+    return ['review_scores_rating', 'review_scores_accuracy', 'review_scores_cleanliness',\
+        'review_scores_checkin', 'review_scores_communication', 'review_scores_location', \
+        'review_scores_value']
 
 def get_occupancy_rate(listing_id):
     """total number of dates booked divided the total number of days avaliable."""
@@ -110,4 +144,7 @@ def get_occupancy_rate(listing_id):
                 else:
                     continue
         return avaliability[0] / float(avaliability[0] + avaliability[1])
-print get_occupancy_rate(get_listing_id_from_location('37.751992462976204', '-122.40421045324041'))
+
+occu = get_most_expensive()
+for occ in occu:
+    print occ[0], ': ', occ[1]
