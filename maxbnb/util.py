@@ -144,7 +144,3 @@ def get_occupancy_rate(listing_id):
                 else:
                     continue
         return avaliability[0] / float(avaliability[0] + avaliability[1])
-
-occu = get_most_expensive()
-for occ in occu:
-    print occ[0], ': ', occ[1]

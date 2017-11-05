@@ -1,54 +1,38 @@
 <!DOCTYPE html>
 <html>
     <head>
+
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
+        <link rel="stylesheet" href="static/css/style.css?4">
         <script src="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+        
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     </head>
     <body>
-            <div class="ct-chart ct-golden-section" id="chart1"></div>
-            <div class="ct-chart ct-golden-section" id="chart2"></div>
+
+            <ul class="nav nav-tabs">
+                <li role="presentation" class="active"><a href="#">Home</a></li>
+                <li role="presentation"><a href="#">Profile</a></li>
+                <li role="presentation"><a href="#">Messages</a></li>
+            </ul>
+            <figure>
+                <embed type="image/svg+xml" src="static/assets/neighborhood_count.svg" />
+            </figure>
 
             <figure>
-                <embed type="image/svg+xml" src="/static/assets/bar_chart.svg" />
+                <embed type="image/svg+xml" src="static/assets/most_expensive.svg" />
+            </figure>
+
+            <figure>
+                <embed type="image/svg+xml" src="static/assets/most_available.svg" />
             </figure>
     </body>
-    <script>
-        // Initialize a Line chart in the container with the ID chart1
-        $.get('/neighboorhoods', function(results){
-            new Chartist.Line('#chart1', {
-                labels: Object.keys(results),
-                series: [Object.values(results)]
-            });
-
-            var data = {
-                labels: Object.keys(results),
-                series: Object.values(results)
-            };
-
-            var options = {
-                labelInterpolationFnc: function(value) {
-                    return value[0]
-                }
-            };
-
-            var responsiveOptions = [
-                ['screen and (min-width: 640px)', {
-                    chartPadding: 30,
-                    labelOffset: 100,
-                    labelDirection: 'explode',
-                    labelInterpolationFnc: function(value) {
-                        return value;
-                    }
-                }],
-                ['screen and (min-width: 1024px)', {
-                    labelOffset: 80,
-                    chartPadding: 20
-                }]
-            ];
-            new Chartist.Pie('#chart2', data);            
-        });
-
-        
-    </script>
 </html>
