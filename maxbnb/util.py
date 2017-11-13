@@ -58,6 +58,7 @@ def get_most_positive_reviews(rating_type):
             max_ratings.append([neighborhood, rating_avg])
         max_ratings.sort(key=itemgetter(1), reverse=True)
         return max_ratings
+
 def get_overall_reviews():
     ratings = get_neighborhood_dict()
     for rating_type in get_rating_types():
@@ -144,3 +145,13 @@ def get_occupancy_rate(listing_id):
                 else:
                     continue
         return avaliability[0] / float(avaliability[0] + avaliability[1])
+
+def find_estimation(neighborhood):
+    """finds the average price of a neighborhood"""
+    prices = get_most_expensive()
+    for price in prices:
+        print(price[0])
+        if price[0] in neighborhood:
+            return price[1]
+    return -1
+print(find_estimation("Mission District"))

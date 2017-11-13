@@ -4,7 +4,7 @@
 
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
-        <link rel="stylesheet" href="static/css/style.css?4">
+        <link rel="stylesheet" href="static/css/style.css?60dr3eeege">
         <script src="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
@@ -15,14 +15,90 @@
         
         <!-- Latest compiled and minified JavaScript -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    </head>
-    <body>
+    
+        <script>
+            function getEstimation(){
+                fetch('./static/assets/key.txt')
+                .then(response => response.text())
+                .then(function(text){
 
-            <ul class="nav nav-tabs">
-                <li role="presentation" class="active"><a href="#">Home</a></li>
-                <li role="presentation"><a href="#">Profile</a></li>
-                <li role="presentation"><a href="#">Messages</a></li>
-            </ul>
+                    var lat = document.getElementById("est-lat").value;
+                    var long = document.getElementById("est-long").value;
+                    
+                    // uncomment for test.
+                    //var lat = "37.76005055162609";
+                    //var long = "-122.42135244186619";
+
+                    $.get( "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + lat + "," + long + "&key=" + text + "&result_type=neighborhood", function( data, status) {
+                        // working with google's api for the first time. theres probably better ways to traverse the results..
+                        if(data){
+                            if(status == "success" && data["status"] == "OK"){
+                                var str = JSON.stringify(data, null, 2);
+                                console.log(str);
+                                var loc = [];
+
+                                for (var i = 0; i < data.results.length; ++i) {
+                                    if(data.results[i].formatted_address.includes("San Francisco")){
+                                        var state;
+                                        var neighborhood;
+                                        for(var j = 0; j < data.results[i].address_components.length; ++j){
+                                            if(data.results[i].address_components[j].types.includes("locality")){
+                                                state = data.results[i].address_components[j].long_name;
+                                            }
+                                            else if(data.results[i].address_components[j].types.includes("neighborhood")){
+                                                neighborhood = data.results[i].address_components[j].long_name;
+                                            }
+                                        }
+                                        loc.push([state, neighborhood]);
+                                    }
+                                }
+                                /*
+                                There might be times when Google finds more than one result that fits the given lat/long. Thats
+                                why I had to make multiple requests to see if any of the results were a valid neighborhood.
+                                This is really annoying but works. We'll just output the first neighborhood that's
+                                found in the csv file.
+                                */
+                                if(loc.length != 0){
+                                    for(var i = 0; i < loc.length; ++i){
+                                        if(loc[i][0] == "San Francisco"){
+                                            var neighborhood = loc[i][1];
+                                            $.get('/estimation/' + neighborhood, function(resp){
+                                                if(resp != "-1"){
+                                                    addRow('estimation-results', resp.estimation[0], "$" + resp.estimation[1]); 
+                                                }
+                                            });
+                                        }
+                                    }
+                                }
+
+                            }
+                            else {
+                                console.log("There was an error.");
+                            }
+
+                        }
+                    });
+                })
+            }
+
+            function addRow(id, first, second){
+                var table = document.getElementById(id);
+                var row = table.insertRow();
+
+                var cell1 = row.insertCell();
+                var cell2 = row.insertCell();
+
+                cell1.innerHTML = first;
+                cell2.innerHTML = second;
+
+                table.insertRow(row);
+            }
+        </script>
+    
+    </head>
+    <body onload = "">
+
+            <h1 style="color:rgba(245, 233, 233,1); text-align:center; background-color:rgba(0, 4, 4, 0.308);"> <b>Trends found in the data</b></h1>
             <figure>
                 <embed type="image/svg+xml" src="static/assets/neighborhood_count.svg" />
             </figure>
@@ -34,5 +110,50 @@
             <figure>
                 <embed type="image/svg+xml" src="static/assets/most_available.svg" />
             </figure>
+
+            <div id = "est-box">
+                <p>
+                    <h3>Do you have a listing and want to see how much you can earn?</h3>
+                </p>
+                <p> <h4>Insert the latitude and longitude of a new listing:</h4></p>
+
+                <div class="form-group">
+                        <label for="est-lat">Latitude:</label>
+                        <input type="text" class="form-control" id="est-lat">
+                </div>
+                <div class="form-group">
+                    <label for="est-long">Longitude:</label>
+                    <input type="text" class="form-control" id="est-long">
+                </div>
+                <button onclick = "getEstimation();" class = "btn-default"> Estimate </button>
+                <br/>
+                <br/>
+                <table id = "estimation-results" class = "table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Neighborhood</th>
+                            <th>Average Weekly Income</th>
+                        </tr>
+                    </thead>
+                    <tbody id = "est-tbody">
+                    </tbody>
+                </table>
+            </div>
+
+            <br/>
+            <br/>
+
+            <div id = "booking-box">
+                <p>
+                    <h3>Want to optimize your existing listing?</h3>
+                </p>
+                <p> <h4>Insert the latitude and longitude of an existing listing:</h4></p>
+                Latitude:
+                <input type="text" name="booking-lat">
+                Longitude:
+                <input type="text" name="booking-long">
+                <button onclick = ""> Optimize </button>
+                <div> results...</div>
+            </div>
     </body>
 </html>
