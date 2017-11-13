@@ -10,17 +10,9 @@ app = Flask(__name__)
 def index():
     return render_template('chart.html')
 
-@app.route('/data')
-def data():
-    return jsonify({'results' : sample(range(1, 10), 5)})
-
 @app.route('/booking')
 def get_booking_optimal():
     return 'will return optimal price for optimal booking.'
-
-@app.route('/neighboorhoods')
-def neighboorhoods():
-    return jsonify(get_neighborhood_count())
 
 @app.route('/estimation/<neighborhood>')
 def get_estimation(neighborhood):

@@ -74,6 +74,12 @@
                             }
                             else {
                                 console.log("There was an error.");
+
+                                var row = document.getElementById("estimation-results").insertRow();
+
+                                var cell1 = row.insertCell();
+
+                                cell1.innerHTML = "There was an error with the given location. Try another one.";
                             }
 
                         }
@@ -100,15 +106,19 @@
 
             <h1 style="color:rgba(245, 233, 233,1); text-align:center; background-color:rgba(0, 4, 4, 0.308);"> <b>Trends found in the data</b></h1>
             <figure>
-                <embed type="image/svg+xml" src="static/assets/neighborhood_count.svg" />
+                <embed type="image/svg+xml" src="static/assets/neighborhood_countgraph.svg" />
             </figure>
 
             <figure>
-                <embed type="image/svg+xml" src="static/assets/most_expensive.svg" />
+                <embed type="image/svg+xml" src="static/assets/most_expensivegraph.svg" />
             </figure>
 
             <figure>
-                <embed type="image/svg+xml" src="static/assets/most_available.svg" />
+                <embed type="image/svg+xml" src="static/assets/most_availablegraph.svg" />
+            </figure>
+
+            <figure>
+                <embed type="image/svg+xml" src="static/assets/reviewsgraph.svg" />
             </figure>
 
             <div id = "est-box">
@@ -143,6 +153,7 @@
             <br/>
             <br/>
 
+            <!--
             <div id = "booking-box">
                 <p>
                     <h3>Want to optimize your existing listing?</h3>
@@ -155,5 +166,6 @@
                 <button onclick = ""> Optimize </button>
                 <div> results...</div>
             </div>
+            -->
     </body>
 </html>
